@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>脳エモン｜あなたの脳波タイプ診断</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Hiragino Maru Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+  background: linear-gradient(180deg, #FFF8F0 0%, #FFEEE0 100%);
+  color: #3D2914;
+  min-height: 100vh;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px 24px;
+  box-shadow: 0 8px 32px rgba(255, 140, 66, 0.15);
+}
+
+.screen { display: none; animation: fadeIn 0.3s ease; }
+.screen.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-header { text-align: center; padding: 24px 0; }
+.welcome-emoji { font-size: 56px; margin-bottom: 8px; }
+.welcome-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #FF8C42;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+.welcome-subtitle { font-size: 15px; color: #7FB069; margin-bottom: 24px; }
+
+.welcome-text {
+  background: #FFF8F0;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.welcome-info {
+  display: flex;
+  justify-content: space-around;
+  margin: 24px 0;
+}
+
+.info-item { text-align: center; }
+.info-label { font-size: 12px; color: #999; margin-bottom: 4px; }
+.info-value {
+  font-size: 22px;
+  font-weight: bold;
+  color: #FF8C42;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: linear-gradient(135deg, #FF8C42 0%, #FF6B6B 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 140, 66, 0.4);
+  font-family: inherit;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 140, 66, 0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #7FB069;
+  border: 2px solid #7FB069;
+  box-shadow: none;
+  margin-top: 16px;
+}
+
+.btn-secondary:hover {
+  background: #F5F9F0;
+  transform: none;
+  box-shadow: none;
+}
+
+.progress-container { margin-bottom: 24px; }
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #FFEEE0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF8C42, #FF6B6B);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.question-text {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 24px 0;
+  line-height: 1.5;
+  color: #3D2914;
+}
+
+.choice-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 2px solid #FFEEE0;
+  border-radius: 14px;
+  background: #fff;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: #3D2914;
+  line-height: 1.5;
+}
+
+.choice-btn:hover {
+  border-color: #FF8C42;
+  background: #FFF8F0;
+  transform: translateX(4px);
+}
+
+.choice-num {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: #FFEEE0;
+  color: #FF8C42;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  margin-right: 12px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.result-header { text-align: center; padding: 16px 0; }
+.result-emoji { font-size: 64px; margin-bottom: 8px; }
+
+.result-brain-label {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 8px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.result-type-name {
+  font-size: 26px;
+  font-weight: bold;
+  color: #FF8C42;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.result-catch {
+  font-size: 15px;
+  color: #7FB069;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.result-section {
+  background: #FFF8F0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.result-section h3 {
+  font-size: 16px;
+  color: #FF8C42;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-section p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #3D2914;
+}
+
+.brain-summary {
+  background: linear-gradient(135deg, #FFF8F0 0%, #FFEEE0 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 2px dashed #FF8C42;
+}
+
+.brain-summary h3 {
+  font-size: 16px;
+  color: #FF8C42;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.brain-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed #FFD4B3;
+}
+
+.brain-row:last-child { border-bottom: none; }
+
+.brain-row-label {
+  font-size: 14px;
+  color: #3D2914;
+  font-weight: bold;
+}
+
+.brain-row-value {
+  font-size: 15px;
+  color: #FF8C42;
+  font-weight: bold;
+}
+
+.advice-block {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-left: 4px solid #FF8C42;
+}
+
+.advice-block:last-child { margin-bottom: 0; }
+
+.advice-block h4 {
+  font-size: 14px;
+  color: #FF8C42;
+  margin-bottom: 8px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.advice-block p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #3D2914;
+}
+
+.video-list { list-style: none; padding: 0; }
+
+.video-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  border-left: 4px solid #FF8C42;
+  font-size: 14px;
+  color: #3D2914;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.video-item:hover {
+  background: #FFF8F0;
+  transform: translateX(4px);
+}
+
+.video-item a {
+  color: #3D2914;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  line-height: 1.5;
+}
+
+.score-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.score-label {
+  flex: 0 0 130px;
+  font-size: 13px;
+  color: #666;
+  font-weight: bold;
+}
+
+.score-bar {
+  flex: 1;
+  height: 14px;
+  background: #FFEEE0;
+  border-radius: 7px;
+  overflow: hidden;
+  position: relative;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 7px;
+  transition: width 0.8s ease;
+}
+
+.score-fill.alpha { background: linear-gradient(90deg, #7FB069, #A8D08D); }
+.score-fill.gamma { background: linear-gradient(90deg, #FF6B6B, #C0392B); }
+.score-fill.beta { background: linear-gradient(90deg, #FF8C42, #FF6B6B); }
+.score-fill.theta { background: linear-gradient(90deg, #87CEEB, #5DADE2); }
+.score-fill.delta { background: linear-gradient(90deg, #5DADE2, #2874A6); }
+
+.score-value {
+  flex: 0 0 50px;
+  font-size: 13px;
+  color: #FF8C42;
+  text-align: right;
+  font-weight: bold;
+}
+
+.score-total {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #FFD4B3;
+  text-align: right;
+  font-size: 12px;
+  color: #999;
+}
+
+.brain-wave-explanation {
+  background: #FFF8F0;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.7;
+}
+
+@media (max-width: 480px) {
+  .container { padding: 24px 16px; }
+  .welcome-title { font-size: 28px; }
+  .question-text { font-size: 17px; }
+  .choice-btn { font-size: 14px; padding: 14px; }
+  .result-type-name { font-size: 22px; }
+  .score-label { flex: 0 0 100px; font-size: 12px; }
+  .score-value { flex: 0 0 40px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Welcome Screen -->
+  <div id="welcome-screen" class="screen active">
+    <div class="welcome-header">
+      <div class="welcome-emoji">🧠</div>
+      <div class="welcome-title">脳エモン</div>
+      <div class="welcome-subtitle">あなたの脳波タイプを診断</div>
+    </div>
+    <div class="welcome-text">
+      なんとなく疲れる、眠れない、集中できない…<br>
+      その不調、<strong>脳波バランスの乱れ</strong>が原因かも。<br><br>
+      15個の質問（5択）に答えて、<br>
+      あなたの今の<strong>「脳波タイプ」</strong>を100点満点で診断します。<br><br>
+      🌿<strong>α波（アルファ波）</strong>が一番バランスの良い状態。<br>
+      どちらかに偏りすぎないことが大切です✨
+    </div>
+    <div class="welcome-info">
+      <div class="info-item">
+        <div class="info-label">質問数</div>
+        <div class="info-value">15問</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">所要時間</div>
+        <div class="info-value">約3分</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">タイプ数</div>
+        <div class="info-value">10種</div>
+      </div>
+    </div>
+    <button class="btn" onclick="startQuiz()">診断を始める</button>
+  </div>
+
+  <!-- Question Screen -->
+  <div id="question-screen" class="screen">
+    <div class="progress-container">
+      <div class="progress-text">
+        <span id="progress-text">Q1 / 15</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+    <div class="question-text" id="question-text"></div>
+    <div id="choices-container"></div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen" class="screen">
+    <div class="result-header">
+      <div class="result-emoji" id="result-emoji">🌿</div>
+      <div class="result-brain-label">あなたの脳波タイプは…</div>
+      <div class="result-type-name" id="result-type-name"></div>
+      <div class="result-catch" id="result-catch"></div>
+    </div>
+
+    <div class="brain-summary">
+      <h3>🧠 あなたの脳波バランス</h3>
+      <div class="brain-row">
+        <span class="brain-row-label">優位な脳波</span>
+        <span class="brain-row-value" id="brain-dominant">—</span>
+      </div>
+      <div class="brain-row">
+        <span class="brain-row-label">総合コンディション</span>
+        <span class="brain-row-value" id="brain-condition">—</span>
+      </div>
+    </div>
+
+    <div class="result-section">
+      <h3>🩺 今のあなたの脳の状態</h3>
+      <p id="result-description"></p>
+    </div>
+
+    <div class="result-section">
+      <h3>📊 脳波バランススコア</h3>
+      <div class="score-meter" id="score-meter"></div>
+      <div class="score-total">合計：100％（各軸の配分）</div>
+      <div class="brain-wave-explanation">
+        <strong>🌿 α波が高い＝理想状態。</strong>
+        β波・γ波が高いと「過覚醒・緊張」、θ波・δ波が高いと「沈静・無気力」傾向です。
+      </div>
+    </div>
+
+    <div class="result-section">
+      <h3>✨ ゆう先生からのアドバイス</h3>
+      <div id="advice-blocks"></div>
+    </div>
+
+    <div class="result-section" style="display: none;">
+      <h3>🎬 あなたにおすすめのセルフケア動画</h3>
+      <ul class="video-list" id="video-list"></ul>
+    </div>
+
+    <button class="btn btn-secondary" onclick="restartQuiz()">もう一度診断する</button>
+  </div>
+
+</div>
+
+<script>
+// 質問データ（5択／各選択肢で1軸に2点）
+const questions = [
+  {
+    text: "Q1. 思考の状態は？",
+    choices: [
+      { label: "ぼーっと何も浮かばない", scores: { "δ波": 2 } },
+      { label: "ゆったり穏やかに浮かぶ", scores: { "θ波": 2 } },
+      { label: "クリアに考えられる", scores: { "α波": 2 } },
+      { label: "思考が活発、回転が速い", scores: { "β波": 2 } },
+      { label: "思考が暴走、止まらない", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q2. 集中力は？",
+    choices: [
+      { label: "全く集中できない、すぐ眠くなる", scores: { "δ波": 2 } },
+      { label: "ぼんやり、すぐ気が散る", scores: { "θ波": 2 } },
+      { label: "穏やかに長時間続く", scores: { "α波": 2 } },
+      { label: "張り詰めて集中、疲れる", scores: { "β波": 2 } },
+      { label: "過集中で燃え尽き感", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q3. 朝の目覚めは？",
+    choices: [
+      { label: "ほぼ起きられない、ベッドから出るのもつらい", scores: { "δ波": 2 } },
+      { label: "だるい、起きるのに時間がかかる", scores: { "θ波": 2 } },
+      { label: "すっきり起きられる", scores: { "α波": 2 } },
+      { label: "早めに目覚めるが緊張感あり", scores: { "β波": 2 } },
+      { label: "早朝に覚醒、眠れず焦る", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q4. 夜の睡眠の質は？",
+    choices: [
+      { label: "寝過ぎる、長時間寝ても疲れが取れない", scores: { "δ波": 2 } },
+      { label: "浅い、何度も目が覚める", scores: { "θ波": 2 } },
+      { label: "ぐっすり眠れる", scores: { "α波": 2 } },
+      { label: "寝つきが悪い", scores: { "β波": 2 } },
+      { label: "ほぼ眠れない、思考が止まらず眠れない", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q5. 日中の眠気は？",
+    choices: [
+      { label: "1日中眠い、常に強い眠気", scores: { "δ波": 2 } },
+      { label: "午後にぼーっとする", scores: { "θ波": 2 } },
+      { label: "ほとんどない", scores: { "α波": 2 } },
+      { label: "むしろ覚醒している、眠くない", scores: { "β波": 2 } },
+      { label: "全く眠くない、覚醒しすぎ", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q6. ストレス度合いは？",
+    choices: [
+      { label: "ストレスを感じる気力もない", scores: { "δ波": 2 } },
+      { label: "あまり感じない、無関心", scores: { "θ波": 2 } },
+      { label: "少なくて穏やか", scores: { "α波": 2 } },
+      { label: "常に何かしらある", scores: { "β波": 2 } },
+      { label: "限界、爆発寸前", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q7. リラックスタイムは？",
+    choices: [
+      { label: "リラックスしすぎて寝てしまう", scores: { "δ波": 2 } },
+      { label: "しっかり取れる、ぼーっとする", scores: { "θ波": 2 } },
+      { label: "適度に取れている", scores: { "α波": 2 } },
+      { label: "あまり取れない", scores: { "β波": 2 } },
+      { label: "全く取れない、休めない", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q8. 思考のクリアさは？",
+    choices: [
+      { label: "全く考えられない、霧の中", scores: { "δ波": 2 } },
+      { label: "ぼんやり、はっきりしない", scores: { "θ波": 2 } },
+      { label: "クリアでスッキリ", scores: { "α波": 2 } },
+      { label: "活発、回転が速い", scores: { "β波": 2 } },
+      { label: "頭がフル稼働で暴走", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q9. 感情の起伏は？",
+    choices: [
+      { label: "無気力、何も感じない", scores: { "δ波": 2 } },
+      { label: "穏やか過ぎ、感動も少ない", scores: { "θ波": 2 } },
+      { label: "安定して穏やか", scores: { "α波": 2 } },
+      { label: "イライラ・不安が強い", scores: { "β波": 2 } },
+      { label: "感情が爆発、コントロール不能", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q10. 呼吸の深さは？",
+    choices: [
+      { label: "浅く弱々しい、息する力もない", scores: { "δ波": 2 } },
+      { label: "浅め、無意識", scores: { "θ波": 2 } },
+      { label: "深くゆっくり吸える", scores: { "α波": 2 } },
+      { label: "浅い、息苦しい", scores: { "β波": 2 } },
+      { label: "息が止まる、過呼吸気味", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q11. 体の感覚（こり・緊張など）は？",
+    choices: [
+      { label: "全身ぐったり、動かしたくない", scores: { "δ波": 2 } },
+      { label: "全体的にだるい、軽いこり", scores: { "θ波": 2 } },
+      { label: "軽くスッキリしている", scores: { "α波": 2 } },
+      { label: "慢性的なこり、緊張あり", scores: { "β波": 2 } },
+      { label: "激しいこり、痛み、緊張MAX", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q12. 寝つきまでの時間は？",
+    choices: [
+      { label: "倒れるように寝てしまう", scores: { "δ波": 2 } },
+      { label: "早く眠くなるがゴロゴロ", scores: { "θ波": 2 } },
+      { label: "5〜10分くらい", scores: { "α波": 2 } },
+      { label: "15〜30分", scores: { "β波": 2 } },
+      { label: "1時間以上、寝られない", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q13. 1日の活動レベルは？",
+    choices: [
+      { label: "ほぼ動けない、ベッドから出ない", scores: { "δ波": 2 } },
+      { label: "ゆっくり、最低限のことだけ", scores: { "θ波": 2 } },
+      { label: "適度に動ける、無理しすぎない", scores: { "α波": 2 } },
+      { label: "活発、忙しい", scores: { "β波": 2 } },
+      { label: "過活動、休む暇なし", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q14. 食欲は？",
+    choices: [
+      { label: "食欲ゼロ、食べたくない", scores: { "δ波": 2 } },
+      { label: "あまり食べたくない、軽め", scores: { "θ波": 2 } },
+      { label: "適度に食べられる", scores: { "α波": 2 } },
+      { label: "食べ過ぎてしまう", scores: { "β波": 2 } },
+      { label: "過食、ストレス食い", scores: { "γ波": 2 } }
+    ]
+  },
+  {
+    text: "Q15. 全体的な気分は？",
+    choices: [
+      { label: "沈み込み、絶望感", scores: { "δ波": 2 } },
+      { label: "ぼんやり、無感動", scores: { "θ波": 2 } },
+      { label: "穏やかで前向き", scores: { "α波": 2 } },
+      { label: "緊張、ぴりぴり", scores: { "β波": 2 } },
+      { label: "焦り、過剰興奮", scores: { "γ波": 2 } }
+    ]
+  }
+];
+
+// 10タイプ（脳波ベース）
+const types = [
+  {
+    id: "alpha_balanced",
+    emoji: "🌿",
+    name: "α波 バランス型",
+    catch: "心と脳が整っている、理想型",
+    dominant: "α波（アルファ波）優位",
+    description: "アルファ波が優位な理想的な状態。リラックスしながらも集中力があり、睡眠の質も良好。脳と自律神経が整っており、心身ともにベストコンディションです。",
+    advice_body: "今の状態をキープするため、毎日のセルフケアを習慣化しましょう。深呼吸と軽いストレッチで「α波の状態」を保つのが大切です。",
+    advice_env: "朝に日光を浴びる・規則正しい食事と睡眠・適度な運動。今の生活リズムを崩さないことが最大のセルフケアです。",
+    advice_balance: "「整っている自分」を当たり前にせず、定期的に振り返りを。週1回の自分チェックで微調整しながらキープしましょう。",
+    videos: [
+      "1日5分の自律神経リセット",
+      "朝のリセットストレッチ",
+      "寝る前のリラックスケア",
+      "α波を保つ深呼吸法",
+      "全身ゆるめルーティン"
+    ]
+  },
+  {
+    id: "alpha_beta",
+    emoji: "🌱",
+    name: "α-β寄り 活動バランス型",
+    catch: "軽い緊張あり、ペース調整型",
+    dominant: "α波 優位＋β波 やや強め",
+    description: "アルファ波優位ですがベータ波も少し強めの状態。活動的でやる気がある一方、軽い緊張・思考過多が出ています。バランス側ではあるので、ペース調整で十分整います。",
+    advice_body: "1日のうちに「OFFの時間」を意識的に作りましょう。深呼吸・首ほぐし・頭皮マッサージでα波を強化。",
+    advice_env: "夜のスマホ・PC時間を短くする、暖色系の照明に切り替える、お風呂にゆっくり浸かるなど、夜の環境をリラックス寄りに。",
+    advice_balance: "「活動」と「休息」のメリハリを明確に。仕事の合間に5分の深呼吸を入れて、緊張をα波に戻す習慣を。",
+    videos: [
+      "副交感神経スイッチ呼吸法",
+      "首こり解消ストレッチ",
+      "頭皮マッサージ",
+      "1日5分の自律神経リセット",
+      "寝る前のリラックスストレッチ"
+    ]
+  },
+  {
+    id: "alpha_theta",
+    emoji: "🍃",
+    name: "α-θ寄り リラックス気味型",
+    catch: "ゆるみ過多、メリハリ調整型",
+    dominant: "α波 優位＋θ波 やや強め",
+    description: "アルファ波優位ですがシータ波も強め。ややリラックス過多で、集中力にむらが出やすい状態。日中ぼんやりすることが多いかもしれません。",
+    advice_body: "朝のアクティベーションケアで脳の活性度を上げましょう。肩甲骨ストレッチや活性呼吸法が効果的。",
+    advice_env: "朝一番に冷たい水で顔を洗う、朝日を浴びながら散歩する、温度差シャワー（最後に冷水）など、覚醒スイッチを入れる工夫を。",
+    advice_balance: "「ゆるみ」を「集中」に切り替える儀式を作る。朝のルーティン・運動・カフェイン適量摂取でα→β寄りへ。",
+    videos: [
+      "朝のリセットストレッチ",
+      "肩甲骨はがしで覚醒",
+      "活性化呼吸法",
+      "顔のむくみ取りで朝スッキリ",
+      "朝の整体セルフケア"
+    ]
+  },
+  {
+    id: "beta",
+    emoji: "⚡",
+    name: "β波 緊張型",
+    catch: "思考過多、リラックス処方型",
+    dominant: "β波（ベータ波）優位",
+    description: "ベータ波が優位で、思考が止まらず緊張が抜けない状態。α波不足でリラックスできていません。肩こり・首こり、寝つきの悪さが特徴。",
+    advice_body: "意識的に「OFFスイッチ」を入れる時間を作りましょう。副交感神経を呼び起こす深呼吸（4秒吸って7秒止めて8秒吐く）と頭部ケアが効果的。",
+    advice_env: "夜は暖色系の照明に切り替える、寝る2時間前からスマホ・PC断ち、温かい風呂にゆっくり浸かる、ハーブティーを飲む。",
+    advice_balance: "緊張側に偏っているので、意識的にθ・δ寄りのアクションを。瞑想・自然散歩・読書など「考えない時間」を1日30分以上確保。",
+    videos: [
+      "副交感神経スイッチ呼吸法",
+      "首こり解消で脳をゆるめる",
+      "肩甲骨はがしセルフケア",
+      "頭皮マッサージで思考リセット",
+      "寝る前のリラックスストレッチ"
+    ]
+  },
+  {
+    id: "beta_gamma",
+    emoji: "🌀",
+    name: "β-γ 高覚醒型",
+    catch: "脳が走り続けている、減速型",
+    dominant: "β波＋γ波 ダブル優位",
+    description: "ベータ波・ガンマ波の両方が強く出ている状態。脳がフル稼働で過覚醒、燃え尽き寸前のサイン。眠れない・思考が止まらない・常に緊張している。",
+    advice_body: "完全にスイッチを切る時間が必要です。深呼吸＋全身脱力＋頭皮ほぐしをセットで実施。寝る前は特に丁寧に。",
+    advice_env: "スマホ・PC・SNS断ちを1日2時間以上、暗めの照明で過ごす、温かい飲み物（カフェイン断ち）、深い湯船。夕方以降のカフェイン厳禁。",
+    advice_balance: "完全にリラックス側（θ・δ）に振りに行く必要があります。瞑想・自然・睡眠を最優先。週末は何もしない日を作る勇気を。",
+    videos: [
+      "脳疲労リセット頭ほぐし",
+      "副交感神経スイッチ呼吸",
+      "全身ゆるめストレッチ",
+      "眠りを深める寝る前ストレッチ",
+      "1日5分の脳リセット"
+    ]
+  },
+  {
+    id: "gamma",
+    emoji: "💥",
+    name: "γ波 過覚醒型",
+    catch: "脳の暴走、緊急停止型",
+    dominant: "γ波（ガンマ波）突出",
+    description: "ガンマ波が突出している状態。極度の覚醒・興奮で、感覚過敏や強い不安、不眠が出ている可能性があります。早急なケアが必要なレベル。",
+    advice_body: "一旦完全休息モードへ。深呼吸＋頭皮の徹底ほぐし＋安静が最優先。長期化しているなら専門家への相談も検討してください。",
+    advice_env: "刺激を遮断：暗く静かな環境、SNS・ニュース断ち、人混みを避ける、温かい食事と飲み物、深い湯船での入浴。アルコール・カフェイン厳禁。",
+    advice_balance: "完全にδ波寄りへ振る必要があります。たっぷりの睡眠、自然の中での散歩、瞑想、何もしない時間の最大化。今は「攻め」より「守り」。",
+    videos: [
+      "緊急レスキュー深呼吸",
+      "脳疲労デトックス頭ほぐし",
+      "副交感神経スイッチ呼吸",
+      "全身脱力ストレッチ",
+      "安眠を促す寝る前ケア"
+    ]
+  },
+  {
+    id: "theta",
+    emoji: "🌫️",
+    name: "θ波 ぼんやり型",
+    catch: "集中力低下、覚醒度UP型",
+    dominant: "θ波（シータ波）優位",
+    description: "シータ波が優位で、ぼんやり・霧の中の感覚。集中力が続かず、注意散漫になっています。日中の眠気や浅い眠りも特徴。",
+    advice_body: "朝のアクティベーション＋日中の軽い運動でβ波・α波を呼び起こしましょう。肩甲骨ストレッチ・活性呼吸法を朝のルーティンに。",
+    advice_env: "朝に冷たい水で顔を洗う・冷たいシャワー、明るい光環境で過ごす、刺激のある音楽、規則的な食事リズム。日中は屋外で活動的に。",
+    advice_balance: "α・β寄りに振る軽い覚醒が必要。朝の運動・カフェイン適量・集中作業の時間を意図的に作って、脳の覚醒度を上げる。",
+    videos: [
+      "朝のリセットストレッチ",
+      "肩甲骨はがしで覚醒",
+      "活性化呼吸法",
+      "顔のむくみ取りで朝スッキリ",
+      "1日5分のセルフケア"
+    ]
+  },
+  {
+    id: "theta_delta",
+    emoji: "🌑",
+    name: "θ-δ 燃え尽き型",
+    catch: "心身の電源OFF、回復優先型",
+    dominant: "θ波＋δ波 ダブル優位",
+    description: "シータ波・デルタ波が両方強く、心身が「電源OFF」状態。極度の疲労・無気力・燃え尽きのサイン。これは怠けではなく、脳からの「もう動けない」信号。",
+    advice_body: "まず質の良い休息を最優先に。無理に動かそうとせず、ゆっくり頭部マッサージや軽いストレッチで体を労って。",
+    advice_env: "休む環境を整える：心地よい音楽、自然との接触、栄養のある食事、規則的な睡眠。SNS・無理な人付き合いから一時的に離れる。",
+    advice_balance: "焦らずに、徐々にα寄りへ回復させる。週単位で見て少しずつ。一気に「がんばろう」とせず、まず「休む」を許可する。",
+    videos: [
+      "脳疲労デトックス頭部マッサージ",
+      "朝のリセットセルフケア",
+      "副交感神経を整える呼吸法",
+      "心と体をゆるめるストレッチ",
+      "1日5分の脳リセット"
+    ]
+  },
+  {
+    id: "delta",
+    emoji: "🌙",
+    name: "δ波 深沈型",
+    catch: "覚醒不全、起こし型",
+    dominant: "δ波（デルタ波）優位",
+    description: "デルタ波が優位な状態。日中も強い眠気、覚醒できない、無気力。脳が「常時睡眠モード」のような状態になっています。",
+    advice_body: "朝のアクティベーションケアを毎日習慣に。肩甲骨はがし・自律神経を起こす呼吸法・顔のむくみ取りで覚醒スイッチON。",
+    advice_env: "朝の日光を必ず浴びる（5分以上）、冷たい水で顔を洗う or 冷水シャワー、しっかり朝食（特にタンパク質）、日中は明るい場所で活動。",
+    advice_balance: "β・γ寄りへ振って覚醒度を上げる。朝の運動・カフェイン適量・刺激のある会話・新しいことへの挑戦で脳を活性化。",
+    videos: [
+      "朝のリセットストレッチ",
+      "自律神経を起こす朝の呼吸法",
+      "肩甲骨はがしで覚醒",
+      "顔のむくみ取りで朝スッキリ",
+      "朝の整体セルフケア"
+    ]
+  },
+  {
+    id: "gamma_delta",
+    emoji: "⚖️",
+    name: "γ-δ シーソー型",
+    catch: "極端な振れ幅、整え型",
+    dominant: "γ波＋δ波 シーソー状態",
+    description: "ガンマ波・デルタ波が両方強く、覚醒と沈静の極端な振れ幅。自律神経が大きく乱れています。朝はだるく夜は眠れない、というような不安定さ。",
+    advice_body: "朝と夜で違うケアを徹底。朝はリセットストレッチ＋活性呼吸、夜はリラックスストレッチ＋副交感神経呼吸。",
+    advice_env: "1日の明暗リズムを徹底整備：朝の日光・夜のブルーライト遮断、規則的な食事と睡眠、温度差シャワー（朝冷水・夜温水）。",
+    advice_balance: "極端な振れ幅を真ん中（α）に集める意識を。朝のルーティン＋夜のルーティンを「絶対の習慣」にして、自律神経のリズムを整える。",
+    videos: [
+      "朝のリセットストレッチ",
+      "夜のリラックスセルフケア",
+      "自律神経を整える呼吸法",
+      "首ほぐしで神経バランス調整",
+      "1日5分の自律神経リセット"
+    ]
+  }
+];
+
+let currentQuestion = 0;
+let scores = { "γ波": 0, "β波": 0, "α波": 0, "θ波": 0, "δ波": 0 };
+
+function startQuiz() {
+  currentQuestion = 0;
+  scores = { "γ波": 0, "β波": 0, "α波": 0, "θ波": 0, "δ波": 0 };
+  showScreen("question-screen");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  document.getElementById("question-text").textContent = q.text;
+  document.getElementById("progress-text").textContent = `Q${currentQuestion + 1} / ${questions.length}`;
+  const percent = Math.round((currentQuestion / questions.length) * 100);
+  document.getElementById("progress-percent").textContent = `${percent}%`;
+  document.getElementById("progress-fill").style.width = `${percent}%`;
+
+  const container = document.getElementById("choices-container");
+  container.innerHTML = "";
+  q.choices.forEach((c, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.innerHTML = `<span class="choice-num">${idx + 1}</span>${c.label}`;
+    btn.onclick = () => selectChoice(c);
+    container.appendChild(btn);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function selectChoice(choice) {
+  for (const axis in choice.scores) {
+    scores[axis] += choice.scores[axis];
+  }
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function determineType() {
+  // 100点満点で正規化（全軸合計を100に）
+  const total = Object.values(scores).reduce((a, b) => a + b, 0);
+  const normalized = {};
+  for (const axis in scores) {
+    normalized[axis] = total > 0 ? Math.round((scores[axis] / total) * 100) : 0;
+  }
+
+  // 判定（優先度順）
+  let typeId;
+
+  // 1. γ+δが両方20以上 → シーソー型（最優先）
+  if (normalized["γ波"] >= 20 && normalized["δ波"] >= 20) {
+    typeId = "gamma_delta";
+  }
+  // 2. β+γが両方20以上 → 高覚醒型
+  else if (normalized["β波"] >= 20 && normalized["γ波"] >= 20) {
+    typeId = "beta_gamma";
+  }
+  // 3. θ+δが両方20以上 → 燃え尽き型
+  else if (normalized["θ波"] >= 20 && normalized["δ波"] >= 20) {
+    typeId = "theta_delta";
+  }
+  // 4. γが30以上 → γ波 過覚醒型
+  else if (normalized["γ波"] >= 30) {
+    typeId = "gamma";
+  }
+  // 5. δが30以上 → δ波 深沈型
+  else if (normalized["δ波"] >= 30) {
+    typeId = "delta";
+  }
+  else {
+    // 最大軸で判定
+    const sorted = Object.entries(normalized).sort((a, b) => b[1] - a[1]);
+    const top = sorted[0][0];
+    const second = sorted[1][0];
+
+    if (top === "α波") {
+      const otherMax = Math.max(normalized["β波"], normalized["γ波"], normalized["θ波"], normalized["δ波"]);
+      if (otherMax < 20) {
+        typeId = "alpha_balanced";
+      } else if (second === "β波" || second === "γ波") {
+        typeId = "alpha_beta";
+      } else {
+        typeId = "alpha_theta";
+      }
+    }
+    else if (top === "β波") typeId = "beta";
+    else if (top === "γ波") typeId = "gamma";
+    else if (top === "θ波") typeId = "theta";
+    else if (top === "δ波") typeId = "delta";
+    else typeId = "alpha_balanced";
+  }
+
+  const type = types.find(t => t.id === typeId);
+  return { type, normalized };
+}
+
+function getOverallCondition(normalized) {
+  const alpha = normalized["α波"];
+  const extreme = normalized["γ波"] + normalized["δ波"];
+  if (alpha >= 40 && extreme < 20) return "良好✨";
+  if (alpha >= 30) return "やや疲れ気味";
+  if (alpha >= 20) return "注意";
+  return "要セルフケア🚨";
+}
+
+function showResult() {
+  const { type, normalized } = determineType();
+  document.getElementById("result-emoji").textContent = type.emoji;
+  document.getElementById("result-type-name").textContent = type.name;
+  document.getElementById("result-catch").textContent = type.catch;
+  document.getElementById("result-description").textContent = type.description;
+
+  document.getElementById("brain-dominant").textContent = type.dominant;
+  document.getElementById("brain-condition").textContent = getOverallCondition(normalized);
+
+  // スコアメーター（100点満点）
+  const meter = document.getElementById("score-meter");
+  meter.innerHTML = "";
+  const order = ["γ波", "β波", "α波", "θ波", "δ波"];
+  const labels = {
+    "γ波": "γ波（過覚醒）",
+    "β波": "β波（緊張）",
+    "α波": "α波（理想）",
+    "θ波": "θ波（ぼんやり）",
+    "δ波": "δ波（深沈）"
+  };
+  const colorClass = {
+    "γ波": "gamma",
+    "β波": "beta",
+    "α波": "alpha",
+    "θ波": "theta",
+    "δ波": "delta"
+  };
+  order.forEach((axis) => {
+    const value = normalized[axis];
+    const row = document.createElement("div");
+    row.className = "score-row";
+    row.innerHTML = `
+      <div class="score-label">${labels[axis]}</div>
+      <div class="score-bar"><div class="score-fill ${colorClass[axis]}" style="width: ${value}%"></div></div>
+      <div class="score-value">${value}%</div>
+    `;
+    meter.appendChild(row);
+  });
+
+  // アドバイスブロック（3本柱）
+  const adviceContainer = document.getElementById("advice-blocks");
+  adviceContainer.innerHTML = "";
+  adviceContainer.innerHTML = `
+    <div class="advice-block">
+      <h4>🧘‍♀️ 体のセルフケア</h4>
+      <p>${type.advice_body}</p>
+    </div>
+    <div class="advice-block">
+      <h4>🌞 環境・ライフスタイル</h4>
+      <p>${type.advice_env}</p>
+    </div>
+    <div class="advice-block">
+      <h4>⚖️ バランス改善のヒント</h4>
+      <p>${type.advice_balance}</p>
+    </div>
+  `;
+
+  // 動画リスト
+  const list = document.getElementById("video-list");
+  list.innerHTML = "";
+  type.videos.forEach((title) => {
+    const li = document.createElement("li");
+    li.className = "video-item";
+    li.innerHTML = `🎬 <a href="#" target="_blank" rel="noopener">${title}</a>`;
+    list.appendChild(li);
+  });
+
+  showScreen("result-screen");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function restartQuiz() {
+  showScreen("welcome-screen");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+</script>
+
+</body>
+</html>
